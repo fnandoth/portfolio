@@ -1,0 +1,144 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { profile } from "../data/profile.js";
+
+const featuredProject =
+  profile.projects.find((project) => project.name.includes("MCSync")) ??
+  profile.projects[profile.projects.length - 1];
+---
+
+<BaseLayout title={`${profile.fullName} | Portfolio`}>
+  <section class="home-view">
+    <div class="hero-grid">
+      <article class="hero">
+        <p class="label">PERFIL</p>
+        <h1 class="display">{profile.fullName}</h1>
+        <p class="headline">{profile.headline}</p>
+        <p class="body">{profile.summary}</p>
+        <p class="body body-secondary">{profile.exitStory}</p>
+        <div class="tags">
+          {profile.roles.map((role) => <span class="tag">{role}</span>)}
+        </div>
+      </article>
+
+      <aside class="meta-list">
+        <div class="meta-row">
+          <p class="label">EMAIL</p>
+          <a class="meta-value" href={`mailto:${profile.email}`}>{profile.email}</a>
+        </div>
+        <div class="meta-row">
+          <p class="label">UBICACIÓN</p>
+          <p class="meta-value">{profile.location}</p>
+        </div>
+        <div class="meta-row">
+          <p class="label">LINKEDIN</p>
+          <a class="meta-value" href={profile.linkedin} target="_blank" rel="noreferrer">
+            {profile.linkedin.replace("https://", "")}
+          </a>
+        </div>
+        <div class="meta-row">
+          <p class="label">GITHUB</p>
+          <a class="meta-value" href={profile.github} target="_blank" rel="noreferrer">
+            {profile.github.replace("https://", "")}
+          </a>
+        </div>
+      </aside>
+    </div>
+
+    <section class="featured">
+      <div class="featured-head">
+        <p class="label">PROYECTO DESTACADO</p>
+        <p class="caption">MCSYNC</p>
+      </div>
+      <div class="featured-layout">
+        <div class="featured-carousel" aria-label="Capturas de MCSync">
+          <figure class="shot-card">
+            <img
+              id="featured-image"
+              class="shot"
+              src={featuredProject.screenshots?.[0]}
+              alt="Captura 1 de MCSync"
+              loading="lazy"
+            />
+          </figure>
+          <div class="carousel-controls">
+            <button class="carousel-btn" id="prev-shot" type="button" aria-label="Captura anterior">
+              [&lt;]
+            </button>
+            <p class="caption" id="shot-counter">
+              1 / {featuredProject.screenshots?.length ?? 0}
+            </p>
+            <button class="carousel-btn" id="next-shot" type="button" aria-label="Captura siguiente">
+              [&gt;]
+            </button>
+          </div>
+        </div>
+
+        <div class="featured-details">
+          <h2 class="title">{featuredProject.name}</h2>
+          <p class="body">{featuredProject.heroMetric}</p>
+          <p class="body body-secondary">{featuredProject.description}</p>
+          <p class="body body-secondary">{featuredProject.extendedDescription}</p>
+          <div class="links">
+            {featuredProject.url && (
+              <a class="link link-live" href={featuredProject.url} target="_blank" rel="noreferrer">
+                [ LIVE ]
+              </a>
+            )}
+            {featuredProject.repo && (
+              <a class="link link-repo" href={featuredProject.repo} target="_blank" rel="noreferrer">
+                [ REPO ]
+              </a>
+            )}
+          </div>
+          <div class="tags">
+            {featuredProject.techStack.map((tech) => <span class="tag">{tech}</span>)}
+          </div>
+          <ul class="highlight-list">
+            {featuredProject.highlights?.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+  </section>
+</BaseLayout>
+
+<script define:vars={{ screenshots: featuredProject.screenshots ?? [] }}>
+  const image = document.getElementById("featured-image");
+  const counter = document.getElementById("shot-counter");
+  const prevButton = document.getElementById("prev-shot");
+  const nextButton = document.getElementById("next-shot");
+  let index = 0;
+  let intervalId;
+
+  const update = () => {
+    if (!image || screenshots.length === 0) return;
+    image.src = screenshots[index];
+    image.alt = `Captura ${index + 1} de MCSync`;
+    if (counter) counter.textContent = `${index + 1} / ${screenshots.length}`;
+  };
+
+  const step = (direction) => {
+    if (screenshots.length === 0) return;
+    index = (index + direction + screenshots.length) % screenshots.length;
+    update();
+  };
+
+  const restartAutoRotation = () => {
+    if (intervalId) clearInterval(intervalId);
+    intervalId = setInterval(() => step(1), 4000);
+  };
+
+  prevButton?.addEventListener("click", () => {
+    step(-1);
+    restartAutoRotation();
+  });
+
+  nextButton?.addEventListener("click", () => {
+    step(1);
+    restartAutoRotation();
+  });
+
+  update();
+  restartAutoRotation();
+</script>

@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { profile } from "../data/profile.js";
+
+const experienceItems = profile.projects.filter((project) => project.kind === "experience");
+const projectItems = profile.projects.filter((project) => project.kind !== "experience");
+---
+
+<BaseLayout title={`Proyectos | ${profile.fullName}`}>
+  <section class="projects-view">
+    <div class="projects-head">
+      <p class="label">ARCHIVO DE PROYECTOS</p>
+      <p class="caption">{profile.projects.length} PROYECTOS</p>
+    </div>
+
+    <div class="project-group">
+      <p class="label">EXPERIENCIA LABORAL</p>
+      <div class="projects-list">
+        {experienceItems.map((project) => (
+          <article class="project-item">
+            <div class="project-header">
+              <h2 class="project-name">{project.name}</h2>
+              <p class="caption">{project.heroMetric}</p>
+            </div>
+            {project.description && <p class="body body-secondary">{project.description}</p>}
+            <div class="tags">
+              {project.techStack.map((tech) => <span class="tag">{tech}</span>)}
+            </div>
+            <div class="links">
+              {project.url && (
+                <a class="link link-live" href={project.url} target="_blank" rel="noreferrer">[ LIVE ]</a>
+              )}
+              {project.repo && (
+                <a class="link link-repo" href={project.repo} target="_blank" rel="noreferrer">[ REPO ]</a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="project-group">
+      <p class="label">PROYECTOS PERSONALES</p>
+      <div class="projects-list">
+        {projectItems.map((project) => (
+          <article class="project-item">
+            <div class="project-header">
+              <h2 class="project-name">{project.name}</h2>
+              <p class="caption">{project.heroMetric}</p>
+            </div>
+            {project.description && <p class="body body-secondary">{project.description}</p>}
+            <div class="tags">
+              {project.techStack.map((tech) => <span class="tag">{tech}</span>)}
+            </div>
+            <div class="links">
+              {project.url && (
+                <a class="link link-live" href={project.url} target="_blank" rel="noreferrer">[ LIVE ]</a>
+              )}
+              {project.repo && (
+                <a class="link link-repo" href={project.repo} target="_blank" rel="noreferrer">[ REPO ]</a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
